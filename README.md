@@ -194,27 +194,6 @@ Rcalculate_vc_dt <- function(df){
   return(viewer_coupling_dt)
 }
 
-
-julia_command("
-function calculate_vc_jdf(df)
-  jdf = join(df, df, on = :movie_id, makeunique = true)
-  filter!(row -> row[:viewer_id] > row[:viewer_id_1], jdf)
-  viewer_coupling_jdf = by(jdf, [:viewer_id, :viewer_id_1],
-                           vc = :value => sum)
-  return viewer_coupling_jdf
-end")
-
-julia_eval("calculate_vc_jdf(df)")
-
-
-r_and_julia_vdf <-  rbenchmark::benchmark(
-  Rcalculate_vc_dplyr(df),
-  Rcalculate_vc_dt(df),
-  julia_eval("calculate_vc_jdf(df)"),
-  replications = 5
-)
-
-
 library(dplyr)
 
 comparaisons <- bind_rows(list(r_and_julia_v1,
