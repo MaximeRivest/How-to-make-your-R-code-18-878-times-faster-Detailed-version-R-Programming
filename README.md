@@ -1,7 +1,7 @@
 # How-to-make-your-R-code-18-878-times-faster-Detailed-version-R-Programming
 We show you exactly how we achieved this! Optimizing your code for performance can mean waiting a few minutes instead of days for your code to run. For loops, dataframes, lists, linear algebra, dplyr package and datatable package are all compared. In this detailed version of the tutorial, we will manipulate the same data in 6 different ways and demonstrate how and why these algorithms differ so much. We also compare different scales of datasets! Check out the channel to learn how you can make your R code faster with Julia, Python and SQL. 🏎️
 
-`
+```R
 #------------------------------------------------------------------------------#
 # R programming - DDS
 #------------------------------------------------------------------------------#
@@ -225,4 +225,4 @@ comparaisons <- bind_rows(list(r_and_julia_v1,
 
 comparaisons %>%
   mutate(relative = elapsed/min(elapsed)) %>% View()
-`
+```
