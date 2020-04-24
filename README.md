@@ -125,44 +125,6 @@ Rcalculate_vc_4 <- function(df){
   return(viewer_coupling_df)
 }
 
-
-julia_command(
-"function calculate_vcla(df)
-  df_la = deepcopy(df)
-  categorical!(df_la, :viewer_id)
-  categorical!(df_la, :movie_id)
-  v = convert.(Int, df_la[!, :viewer_id].refs)
-  m = convert.(Int, df_la[!, :movie_id].refs)
-  
-  mat = zeros(maximum(v), maximum(m))
-  
-  for i in 1:length(v) 
-    mat[v[i], m[i]] = 1
-  end
-  
-  vc_mat = mat * mat'
-  
-  viewer_coupling_df = DataFrame(
-    viewer_1 = repeat(1:200, outer = 200),
-    viewer_2 = repeat(1:200, inner = 200),
-    vc = vc_mat[:]
-  )
-  
-  viewer_coupling_df = viewer_coupling_df[
-    (viewer_coupling_df[!,:viewer_1] .> viewer_coupling_df[!,:viewer_2]) .&
-      (viewer_coupling_df[!, :vc] .> 0),:]
-  return viewer_coupling_df
-end")
-
-julia_eval("calculate_vcla(df)")
-
-r_and_julia_v4 <-  rbenchmark::benchmark(
-  Rcalculate_vc_4(df),
-  julia_eval("calculate_vcla(df)"),
-  replications = 5
-)
-
-
 #____dplyr ----
 
 library(dplyr)
@@ -194,14 +156,4 @@ Rcalculate_vc_dt <- function(df){
   return(viewer_coupling_dt)
 }
 
-library(dplyr)
-
-comparaisons <- bind_rows(list(r_and_julia_v1,
-                               r_and_julia_v2,
-                               r_and_julia_v3,
-                               r_and_julia_v4,
-                               r_and_julia_vdf))
-
-comparaisons %>%
-  mutate(relative = elapsed/min(elapsed)) %>% View()
 ```
